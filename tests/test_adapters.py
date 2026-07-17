@@ -44,3 +44,36 @@ def test_parse_dip_violation():
     source = _load("dip_violation.py")
     module = adapter.parse("dip_violation.py", source)
     assert len(module.classes) >= 1
+
+
+def test_js_adapter_language():
+    from solid_checker.adapters.js_adapter import JSAdapter
+    adapter = JSAdapter()
+    assert adapter.language == "javascript"
+
+
+def test_js_adapter_extensions():
+    from solid_checker.adapters.js_adapter import JSAdapter
+    adapter = JSAdapter()
+    assert ".ts" in adapter.supported_extensions
+    assert ".js" in adapter.supported_extensions
+
+
+def test_parse_ts_god_class():
+    from solid_checker.adapters.js_adapter import JSAdapter
+    source = (Path(__file__).parent / "fixtures" / "js_samples" / "god_class.ts").read_text()
+    adapter = JSAdapter()
+    module = adapter.parse("god_class.ts", source)
+    assert len(module.classes) == 1
+    assert module.classes[0].name == "UserService"
+    assert len(module.classes[0].methods) >= 20
+
+
+def test_parse_ts_interface_bloat():
+    from solid_checker.adapters.js_adapter import JSAdapter
+    source = (Path(__file__).parent / "fixtures" / "js_samples" / "interface_bloat.ts").read_text()
+    adapter = JSAdapter()
+    module = adapter.parse("interface_bloat.ts", source)
+    assert len(module.interfaces) == 1
+    assert module.interfaces[0].name == "Worker"
+    assert len(module.interfaces[0].methods) >= 20
