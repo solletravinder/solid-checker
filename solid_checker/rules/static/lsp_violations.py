@@ -7,6 +7,8 @@ from solid_checker.rules.base import BaseRule, RuleContext
 class LSPViolationsRule(BaseRule):
     """Detects Liskov Substitution Principle violations."""
 
+    target_kind: str = "class"
+
     def __init__(self, config: dict = None):
         super().__init__(config)
 

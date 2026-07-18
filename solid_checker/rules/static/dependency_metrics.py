@@ -8,6 +8,8 @@ from solid_checker.rules.base import BaseRule, RuleContext
 class DependencyMetricsRule(BaseRule):
     """Detects high coupling and circular dependencies."""
 
+    target_kind: str = "builder"
+
     def __init__(self, max_outgoing: int = 5, config: dict = None):
         super().__init__(config)
         self.max_outgoing = self.config.get("max_outgoing", max_outgoing)

@@ -7,6 +7,8 @@ from solid_checker.rules.base import BaseRule, RuleContext
 class InterfaceBloatRule(BaseRule):
     """Detects interfaces with too many methods (ISP violation)."""
 
+    target_kind: str = "interface"
+
     def __init__(self, threshold: int = 10, config: dict = None):
         super().__init__(config)
         self.threshold = self.config.get("threshold", threshold)

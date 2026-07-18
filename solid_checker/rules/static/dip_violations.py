@@ -7,6 +7,8 @@ from solid_checker.rules.base import BaseRule, RuleContext
 class DIPViolationsRule(BaseRule):
     """Detects Dependency Inversion Principle violations."""
 
+    target_kind: str = "class"
+
     def __init__(self, config: dict = None):
         super().__init__(config)
         self.abstract_keywords = self.config.get(

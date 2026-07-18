@@ -1,7 +1,7 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import List, Optional
-from solid_checker.ir.models import Class, Violation, Module
+from solid_checker.ir.models import Class, Violation, Module, Interface
 from solid_checker.ir.builder import IRBuilder
 
 
@@ -15,6 +15,8 @@ class RuleContext:
 
 class BaseRule(ABC):
     """Abstract base class for all rules."""
+
+    target_kind: str = "class"  # class, interface, module, builder
 
     def __init__(self, config: dict = None):
         self.config = config or {}

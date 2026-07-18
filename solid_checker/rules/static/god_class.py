@@ -7,6 +7,8 @@ from solid_checker.rules.base import BaseRule, RuleContext
 class GodClassRule(BaseRule):
     """Detects classes with too many methods (SRP violation)."""
 
+    target_kind: str = "class"
+
     def __init__(self, threshold: int = 20, config: dict = None):
         super().__init__(config)
         self.threshold = self.config.get("threshold", threshold)

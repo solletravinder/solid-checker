@@ -7,6 +7,8 @@ from solid_checker.rules.base import BaseRule, RuleContext
 class FeatureEnvyRule(BaseRule):
     """Detects methods that heavily depend on another class's internals (SRP violation)."""
 
+    target_kind: str = "class"
+
     def __init__(self, config: dict = None):
         super().__init__(config)
 
