@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import List, Set
+from typing import List
 from solid_checker.ir.models import Class, Method, Violation, Dependency
 from solid_checker.rules.base import BaseRule, RuleContext
 
