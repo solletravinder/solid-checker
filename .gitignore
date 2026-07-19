@@ -37,6 +37,9 @@ htmlcov/
 .DS_Store
 Thumbs.db
 
+# Playwright MCP
+.playwright-mcp/
+
 # Jupyter
 .ipynb_checkpoints/
 
