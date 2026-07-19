@@ -2,11 +2,11 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Build a CLI tool that analyzes codebases for SOLID principle violations, with multi-language support via a plugin adapter architecture and hybrid static + LLM analysis.
+**Goal:** Build a CLI tool that analyzes codebases for SOLID principle violations, with multi-language support via a plugin adapter architecture and static rule analysis.
 
-**Architecture:** Plugin-based core with language adapters producing a normalized Intermediate Representation (IR). Static rules operate on IR for fast deterministic checks; LLM rules provide deeper analysis only on static-flagged violations. Reporters format output for terminal or JSON/SARIF.
+**Architecture:** Plugin-based core with language adapters producing a normalized Intermediate Representation (IR). Static rules operate on IR for fast deterministic checks. Reporters format output for terminal or JSON.
 
-**Tech Stack:** Python 3.9+, Click (CLI), pyyaml (config), pytest (testing), anthropic SDK (optional LLM), tree-sitter (JS/TS parsing), built-in `ast` (Python parsing)
+**Tech Stack:** Python 3.9+, Click (CLI), pyyaml (config), pytest (testing), built-in `ast` (Python parsing), regex-based (JS/TS parsing)
 
 ## Global Constraints
 
@@ -47,19 +47,10 @@ solid_checker/
 │   │   ├── interface_bloat.py
 │   │   ├── dip_violations.py
 │   │   └── dependency_metrics.py
-│   └── llm/
-│       ├── __init__.py
-│       ├── semantic_cohesion.py
-│       ├── dependency_direction.py
-│       ├── abstraction_quality.py
-│       └── naming_intent.py
 ├── reporters/
 │   ├── __init__.py
 │   ├── terminal.py          # Color-coded terminal output
 │   └── json.py              # JSON output for CI
-└── llm/
-    ├── __init__.py
-    └── analyzer.py          # LLM analysis wrapper (optional)
 
 tests/
 ├── conftest.py              # Shared fixtures
@@ -106,10 +97,6 @@ requires-python = ">=3.9"
 dependencies = [
     "click>=8.0",
     "pyyaml>=6.0",
-    "anthropic>=0.39",
-    "tree-sitter>=0.20",
-    "tree-sitter-python>=0.20",
-    "tree-sitter-javascript>=0.20",
 ]
 
 [project.scripts]
@@ -184,7 +171,6 @@ from .models import Violation, Severity
 
 `solid_checker/ir/models.py`:
 ```python
-from __future__ import annotations
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import List, Optional
@@ -344,7 +330,6 @@ Expected: FAIL with "No module named 'solid_checker.ir.builder'"
 
 `solid_checker/ir/builder.py`:
 ```python
-from __future__ import annotations
 from typing import List, Dict, Optional, Set, Tuple
 from .models import Module, Class, Dependency
 
@@ -424,7 +409,6 @@ from .base import BaseAdapter
 
 `solid_checker/adapters/base.py`:
 ```python
-from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Optional
 from solid_checker.ir.models import Module
@@ -600,7 +584,6 @@ Expected: FAIL with "No module named 'solid_checker.adapters.python_adapter'"
 
 `solid_checker/adapters/python_adapter.py`:
 ```python
-from __future__ import annotations
 import ast
 from pathlib import Path
 from typing import List, Optional
@@ -909,7 +892,6 @@ Expected: FAIL with "No module named 'solid_checker.adapters.js_adapter'"
 
 `solid_checker/adapters/js_adapter.py`:
 ```python
-from __future__ import annotations
 import re
 from pathlib import Path
 from typing import List, Optional
@@ -1255,7 +1237,6 @@ from .base import BaseRule, RuleContext
 
 `solid_checker/rules/base.py`:
 ```python
-from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import List, Optional
 from solid_checker.ir.models import Class, Violation, Module
@@ -1303,7 +1284,6 @@ from .hard_coded_types import HardCodedTypesRule
 
 `solid_checker/rules/static/god_class.py`:
 ```python
-from __future__ import annotations
 from typing import List
 from solid_checker.ir.models import Class, Violation
 from solid_checker.rules.base import BaseRule, RuleContext
@@ -1352,7 +1332,6 @@ class GodClassRule(BaseRule):
 
 `solid_checker/rules/static/feature_envy.py`:
 ```python
-from __future__ import annotations
 from typing import List, Set
 from solid_checker.ir.models import Class, Method, Violation, Dependency
 from solid_checker.rules.base import BaseRule, RuleContext
@@ -1400,7 +1379,7 @@ class FeatureEnvyRule(BaseRule):
                         ))
         return violations
 
-    def _detect_envy(self, cls: Class, method: Method, builder) -> str | None:
+    def _detect_envy(self, cls: Class, method: Method, builder) -> Optional[str]:
         """Heuristic: if method references another class name in its params or logic."""
         # Check method name for hints
         method_name_lower = method.name.lower()
@@ -1417,7 +1396,6 @@ class FeatureEnvyRule(BaseRule):
 
 `solid_checker/rules/static/hard_coded_types.py`:
 ```python
-from __future__ import annotations
 from typing import List
 from solid_checker.ir.models import Violation
 from solid_checker.rules.base import BaseRule, RuleContext
@@ -1579,7 +1557,6 @@ Expected: FAIL with "No module named 'solid_checker.rules.static.xxx'"
 
 `solid_checker/rules/static/lsp_violations.py`:
 ```python
-from __future__ import annotations
 from typing import List
 from solid_checker.ir.models import Class, Violation
 from solid_checker.rules.base import BaseRule, RuleContext
@@ -1637,7 +1614,6 @@ class LSPViolationsRule(BaseRule):
 
 `solid_checker/rules/static/interface_bloat.py`:
 ```python
-from __future__ import annotations
 from typing import List
 from solid_checker.ir.models import Interface, Violation
 from solid_checker.rules.base import BaseRule, RuleContext
@@ -1685,7 +1661,6 @@ class InterfaceBloatRule(BaseRule):
 
 `solid_checker/rules/static/dip_violations.py`:
 ```python
-from __future__ import annotations
 from typing import List
 from solid_checker.ir.models import Class, Dependency, Violation
 from solid_checker.rules.base import BaseRule, RuleContext
@@ -1775,7 +1750,6 @@ class DIPViolationsRule(BaseRule):
 
 `solid_checker/rules/static/dependency_metrics.py`:
 ```python
-from __future__ import annotations
 from typing import List
 from solid_checker.ir.builder import IRBuilder
 from solid_checker.ir.models import Violation
@@ -1908,7 +1882,6 @@ Expected: FAIL with "No module named 'solid_checker.engine'"
 
 `solid_checker/config.py`:
 ```python
-from __future__ import annotations
 from pathlib import Path
 from typing import Any, Optional
 import yaml
@@ -1929,11 +1902,6 @@ DEFAULT_CONFIG = {
         "interface_bloat": True,
         "dip_violations": True,
         "dependency_metrics": True,
-    },
-    "llm": {
-        "enabled": False,
-        "provider": "anthropic",
-        "api_key": None,
     },
     "exclude": [
         "node_modules",
@@ -1988,7 +1956,7 @@ def test_load_config_from_file(tmp_path):
 def test_default_config_has_all_keys():
     assert "rules" in DEFAULT_CONFIG
     assert "exclude" in DEFAULT_CONFIG
-    assert "llm" in DEFAULT_CONFIG
+    assert "thresholds" in DEFAULT_CONFIG
 ```
 
 - [ ] **Step 5: Run config tests to verify they pass**
@@ -2000,7 +1968,6 @@ Expected: PASS
 
 `solid_checker/engine.py`:
 ```python
-from __future__ import annotations
 from pathlib import Path
 from typing import List, Optional, Dict, Type
 from .adapters.base import BaseAdapter
@@ -2186,7 +2153,6 @@ from .json import JSONReporter
 
 `solid_checker/reporters/terminal.py`:
 ```python
-from __future__ import annotations
 from typing import List
 from solid_checker.ir.models import Violation
 
@@ -2240,7 +2206,6 @@ class TerminalReporter:
 
 `solid_checker/reporters/json.py`:
 ```python
-from __future__ import annotations
 from typing import List, Dict, Any
 from solid_checker.ir.models import Violation
 import json
@@ -2269,7 +2234,6 @@ class JSONReporter:
 
 `solid_checker/cli.py`:
 ```python
-from __future__ import annotations
 import click
 from pathlib import Path
 from typing import Optional
@@ -2375,295 +2339,21 @@ git commit -m "feat: add CLI and terminal/JSON reporters"
 
 ---
 
-### Task 9: LLM Rules (Optional Enhancement)
+### Task 9: LLM Rules (Deferred — V2)
 
-**Files:**
-- Create: `solid_checker/llm/__init__.py`
-- Create: `solid_checker/llm/analyzer.py`
-- Create: `solid_checker/rules/llm/__init__.py`
-- Create: `solid_checker/rules/llm/semantic_cohesion.py`
-- Create: `solid_checker/rules/llm/dependency_direction.py`
-- Create: `solid_checker/rules/llm/abstraction_quality.py`
-- Create: `solid_checker/rules/llm/naming_intent.py`
-- Create: `tests/test_llm.py`
-
-**Interfaces:**
-- Consumes: Anthropic SDK, IR models, static violations as context
-- Produces: LLM-based rules that augment static findings
-
-- [ ] **Step 1: Write failing test for LLM analyzer**
-
-`tests/test_llm.py`:
-```python
-from solid_checker.llm.analyzer import LLMAnalyzer
-from solid_checker.ir.models import Module, Class, Violation
-
-def test_llm_analyzer_init():
-    analyzer = LLMAnalyzer(api_key="test-key")
-    assert analyzer.api_key == "test-key"
-
-def test_llm_analyzer_no_key_returns_empty():
-    analyzer = LLMAnalyzer(api_key=None)
-    module = Module(name="test", file_path="test.py")
-    result = analyzer.analyze_cohesion(module)
-    assert result == []
-```
-
-- [ ] **Step 2: Run tests to verify they fail**
-
-Run: `pytest tests/test_llm.py -v`
-Expected: FAIL with "No module named 'solid_checker.llm'"
-
-- [ ] **Step 3: Write LLM analyzer**
-
-`solid_checker/llm/__init__.py`:
-```python
-from .analyzer import LLMAnalyzer
-```
-
-`solid_checker/llm/analyzer.py`:
-```python
-from __future__ import annotations
-from typing import List, Optional
-from solid_checker.ir.models import Module, Violation
-
-try:
-    import anthropic
-    ANTHROPIC_AVAILABLE = True
-except ImportError:
-    ANTHROPIC_AVAILABLE = False
-
-
-class LLMAnalyzer:
-    """Wraps LLM calls for deeper SOLID analysis."""
-
-    def __init__(self, api_key: Optional[str] = None, model: str = "claude-sonnet-4-20250514"):
-        if not ANTHROPIC_AVAILABLE:
-            raise ImportError("anthropic package required for LLM analysis")
-        self.client = anthropic.Anthropic(api_key=api_key)
-        self.model = model
-
-    def analyze_cohesion(self, module: Module) -> List[Violation]:
-        """Ask LLM to assess semantic cohesion of a module."""
-        if not module.classes:
-            return []
-
-        prompt = self._build_cohesion_prompt(module)
-        response = self.client.messages.create(
-            model=self.model,
-            max_tokens=1024,
-            messages=[{"role": "user", "content": prompt}],
-        )
-        return self._parse_cohesion_response(response, module)
-
-    def _build_cohesion_prompt(self, module: Module) -> str:
-        class_descriptions = []
-        for cls in module.classes:
-            methods = ", ".join(m.name for m in cls.methods)
-            class_descriptions.append(f"- {cls.name}: {methods}")
-
-        return (
-            f"Analyze the following classes from '{module.file_path}' for "
-            f"Single Responsibility Principle violations:\n\n"
-            + "\n".join(class_descriptions)
-            + "\n\n"
-            "Does each class have a single, cohesive responsibility? "
-            "List any violations with class name, issue, and suggestion. "
-            "Format each as: CLASS: <name> | ISSUE: <description> | SUGGESTION: <fix>"
-        )
-
-    def _parse_cohesion_response(self, response, module: Module) -> List[Violation]:
-        violations = []
-        text = response.content[0].text
-        for line in text.split("\n"):
-            line = line.strip()
-            if line.startswith("CLASS:"):
-                parts = line.split("|")
-                if len(parts) >= 3:
-                    class_name = parts[0].replace("CLASS:", "").strip()
-                    issue = parts[1].replace("ISSUE:", "").strip()
-                    suggestion = parts[2].replace("SUGGESTION:", "").strip()
-                    violations.append(Violation(
-                        principle="SRP",
-                        rule="llm_semantic_cohesion",
-                        file_path=module.file_path,
-                        line=0,
-                        description=f"LLM analysis: {issue} in '{class_name}'",
-                        severity="info",
-                        suggestion=suggestion,
-                    ))
-        return violations
-```
-
-`solid_checker/rules/llm/__init__.py`:
-```python
-from .semantic_cohesion import LLMSemanticCohesionRule
-from .dependency_direction import LLMDependencyDirectionRule
-from .abstraction_quality import LLMAbstractionQualityRule
-from .naming_intent import LLMNamingIntentRule
-```
-
-`solid_checker/rules/llm/semantic_cohesion.py`:
-```python
-from __future__ import annotations
-from typing import List
-from solid_checker.ir.models import Class, Module, Violation
-from solid_checker.rules.base import BaseRule, RuleContext
-from solid_checker.llm.analyzer import LLMAnalyzer
-
-
-class LLMSemanticCohesionRule(BaseRule):
-    """Uses LLM to assess semantic cohesion of classes (SRP)."""
-
-    def __init__(self, config: dict = None):
-        super().__init__(config)
-        self.analyzer = None
-        if self.config.get("llm", {}).get("api_key"):
-            try:
-                self.analyzer = LLMAnalyzer(api_key=self.config["llm"]["api_key"])
-            except ImportError:
-                pass
-
-    @property
-    def name(self) -> str:
-        return "LLM Semantic Cohesion"
-
-    @property
-    def principle(self) -> str:
-        return "SRP"
-
-    def check(self, target: Module, context: RuleContext) -> List[Violation]:
-        if not self.analyzer:
-            return []
-        return self.analyzer.analyze_cohesion(target)
-```
-
-`solid_checker/rules/llm/dependency_direction.py`:
-```python
-from __future__ import annotations
-from typing import List
-from solid_checker.ir.models import Module, Violation
-from solid_checker.rules.base import BaseRule, RuleContext
-from solid_checker.llm.analyzer import LLMAnalyzer
-
-
-class LLMDependencyDirectionRule(BaseRule):
-    """Uses LLM to assess dependency direction (DIP)."""
-
-    def __init__(self, config: dict = None):
-        super().__init__(config)
-        self.analyzer = None
-        if self.config.get("llm", {}).get("api_key"):
-            try:
-                self.analyzer = LLMAnalyzer(api_key=self.config["llm"]["api_key"])
-            except ImportError:
-                pass
-
-    @property
-    def name(self) -> str:
-        return "LLM Dependency Direction"
-
-    @property
-    def principle(self) -> str:
-        return "DIP"
-
-    def check(self, target: Module, context: RuleContext) -> List[Violation]:
-        if not self.analyzer:
-            return []
-        # Future: implement dependency direction analysis via LLM
-        return []
-```
-
-`solid_checker/rules/llm/abstraction_quality.py`:
-```python
-from __future__ import annotations
-from typing import List
-from solid_checker.ir.models import Interface, Module, Violation
-from solid_checker.rules.base import BaseRule, RuleContext
-from solid_checker.llm.analyzer import LLMAnalyzer
-
-
-class LLMAbstractionQualityRule(BaseRule):
-    """Uses LLM to assess interface/abstraction quality."""
-
-    def __init__(self, config: dict = None):
-        super().__init__(config)
-        self.analyzer = None
-        if self.config.get("llm", {}).get("api_key"):
-            try:
-                self.analyzer = LLMAnalyzer(api_key=self.config["llm"]["api_key"])
-            except ImportError:
-                pass
-
-    @property
-    def name(self) -> str:
-        return "LLM Abstraction Quality"
-
-    @property
-    def principle(self) -> str:
-        return "ISP"
-
-    def check(self, target, context: RuleContext) -> List[Violation]:
-        if not self.analyzer:
-            return []
-        # Future: implement abstraction quality analysis via LLM
-        return []
-```
-
-`solid_checker/rules/llm/naming_intent.py`:
-```python
-from __future__ import annotations
-from typing import List
-from solid_checker.ir.models import Class, Module, Violation
-from solid_checker.rules.base import BaseRule, RuleContext
-from solid_checker.llm.analyzer import LLMAnalyzer
-
-
-class LLMNamingIntentRule(BaseRule):
-    """Uses LLM to assess whether names reflect responsibilities."""
-
-    def __init__(self, config: dict = None):
-        super().__init__(config)
-        self.analyzer = None
-        if self.config.get("llm", {}).get("api_key"):
-            try:
-                self.analyzer = LLMAnalyzer(api_key=self.config["llm"]["api_key"])
-            except ImportError:
-                pass
-
-    @property
-    def name(self) -> str:
-        return "LLM Naming & Intent"
-
-    @property
-    def principle(self) -> str:
-        return "SRP"
-
-    def check(self, target: Module, context: RuleContext) -> List[Violation]:
-        if not self.analyzer:
-            return []
-        # Future: implement naming intent analysis via LLM
-        return []
-```
-
-- [ ] **Step 4: Run LLM tests to verify they pass**
-
-Run: `pytest tests/test_llm.py -v`
-Expected: PASS
-
-- [ ] **Step 5: Commit**
-
-```bash
-git add solid_checker/llm/ solid_checker/rules/llm/ tests/test_llm.py
-git commit -m "feat: add LLM-assisted rules (optional)"
-```
+> **Note:** LLM-assisted rules are deferred to a future version. To implement:
+> 1. Add `anthropic>=0.39` back to `pyproject.toml` dependencies
+> 2. Create `solid_checker/llm/analyzer.py` with LLM client wrapper
+> 3. Create LLM rule modules under `solid_checker/rules/llm/`
+> 4. Re-add `llm` config block to `DEFAULT_CONFIG`
+> 5. Register LLM rules in `cli.py` when `config["llm"]["enabled"]` is true
 
 ---
 
 ### Task 10: Final Integration + Polish
 
 **Files:**
-- Modify: `solid_checker/cli.py` (ensure LLM rules are registered when config enables them)
+- Modify: `solid_checker/cli.py`
 - Create: `tests/integration_test.py`
 - Create: `README.md`
 
@@ -2755,7 +2445,7 @@ solid-checker init-config
 
 ## Configuration
 
-Create `solid-checker.yml` to customize thresholds, enable/disable rules, or configure LLM analysis:
+Create `solid-checker.yml` to customize thresholds, enable/disable rules:
 
 ```yaml
 thresholds:
@@ -2772,11 +2462,6 @@ rules:
   interface_bloat: true
   dip_violations: true
   dependency_metrics: true
-
-llm:
-  enabled: false
-  provider: anthropic
-  api_key: null
 ```
 
 ## Architecture
@@ -2784,7 +2469,6 @@ llm:
 - **Core Engine** — orchestrates file discovery, parsing, rule execution
 - **Language Adapters** — parse source into normalized IR (Python, JS/TS)
 - **Static Rules** — fast deterministic checks on IR (SRP, OCP, LSP, ISP, DIP)
-- **LLM Rules** — optional deeper analysis via Anthropic API
 - **Reporters** — terminal (color-coded) or JSON output
 ```
 
@@ -2804,12 +2488,10 @@ git commit -m "feat: add integration tests and README"
 
 ## Implementation Notes
 
-1. **Tree-sitter vs regex for JS/TS**: The JS adapter uses regex for simplicity. For production use, replace with tree-sitter for more accurate AST parsing.
+1. **JS/TS parsing**: The JS adapter uses regex-based extraction. For production use, consider a proper AST parser.
 
-2. **LLM rules are optional**: They gracefully degrade when no API key is configured. Static rules provide full coverage without LLM.
+2. **Adding a new language**: Create a new adapter class inheriting from `BaseAdapter`, implement `parse()` returning a `Module`, register it in `cli.py`. Zero changes to rules or engine.
 
-3. **Adding a new language**: Create a new adapter class inheriting from `BaseAdapter`, implement `parse()` returning a `Module`, register it in `cli.py`. Zero changes to rules or engine.
+3. **Adding a new rule**: Create a new class inheriting from `BaseRule`, implement `check()`, register it in `cli.py`'s `_get_rules()`.
 
-4. **Adding a new rule**: Create a new class inheriting from `BaseRule`, implement `check()`, register it in `cli.py`'s `_get_rules()`.
-
-5. **Extending the IR**: Add new fields to `solid_checker/ir/models.py` — adapters populate them, rules consume them. No other layers need changes.
+4. **Extending the IR**: Add new fields to `solid_checker/ir/models.py` — adapters populate them, rules consume them. No other layers need changes.

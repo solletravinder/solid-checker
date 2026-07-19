@@ -18,7 +18,6 @@ from .dependency_metrics import DependencyMetricsRule
 
 ### LSPViolationsRule (`solid_checker/rules/static/lsp_violations.py`)
 ```python
-from __future__ import annotations
 from typing import List
 from solid_checker.ir.models import Class, Violation
 from solid_checker.rules.base import BaseRule, RuleContext
@@ -75,7 +74,6 @@ class LSPViolationsRule(BaseRule):
 
 ### InterfaceBloatRule (`solid_checker/rules/static/interface_bloat.py`)
 ```python
-from __future__ import annotations
 from typing import List
 from solid_checker.ir.models import Interface, Violation
 from solid_checker.rules.base import BaseRule, RuleContext
@@ -123,7 +121,6 @@ class InterfaceBloatRule(BaseRule):
 
 ### DIPViolationsRule (`solid_checker/rules/static/dip_violations.py`)
 ```python
-from __future__ import annotations
 from typing import List
 from solid_checker.ir.models import Class, Dependency, Violation
 from solid_checker.rules.base import BaseRule, RuleContext
@@ -206,7 +203,6 @@ class DIPViolationsRule(BaseRule):
 
 ### DependencyMetricsRule (`solid_checker/rules/static/dependency_metrics.py`)
 ```python
-from __future__ import annotations
 from typing import List
 from solid_checker.ir.builder import IRBuilder
 from solid_checker.ir.models import Violation

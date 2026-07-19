@@ -1,4 +1,3 @@
-from __future__ import annotations
 from typing import List, Dict, Any
 from solid_checker.ir.models import Violation
 import json

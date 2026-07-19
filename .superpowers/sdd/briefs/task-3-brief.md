@@ -7,7 +7,6 @@ Third task. Builds on IR models (Task 1) and BaseAdapter (Task 2). The Python ad
 
 ### PythonAdapter (`solid_checker/adapters/python_adapter.py`)
 ```python
-from __future__ import annotations
 import ast
 from pathlib import Path
 from typing import List, Optional

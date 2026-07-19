@@ -43,8 +43,7 @@ Orchestrates the analysis pipeline:
 3. Dispatch each file to the appropriate language adapter
 4. Collect IR from all adapters
 5. Run static rules on IR (fast, deterministic)
-6. For violations flagged by static rules, optionally run LLM rules for deeper analysis
-7. Aggregate and return results to the reporter
+6. Aggregate and return results to the reporter
 
 ### 4.3 Language Adapters → Intermediate Representation (IR)
 Each adapter knows one language. It:
@@ -61,7 +60,7 @@ The IR captures only what SOLID rules need:
 Adding a new language: write one adapter that produces this IR. No other layer changes.
 
 ### 4.4 Rules
-Two categories, both operating on the IR:
+One category, operating on the IR:
 
 **Static Rules** (fast, deterministic):
 - **SRP — God Class:** class with too many methods or responsibilities
@@ -71,14 +70,6 @@ Two categories, both operating on the IR:
 - **ISP — Interface bloat:** interface with too many methods
 - **DIP — Concrete dependencies:** module directly instantiates concrete classes instead of depending on abstractions
 - **Dependency metrics:** circular imports, high coupling (too many outgoing dependencies)
-
-**LLM Rules** (deeper analysis, optional):
-- Semantic cohesion — does the class do one conceptual thing?
-- Dependency direction — do high-level modules depend on low-level ones correctly?
-- Appropriate abstraction — are interfaces well-designed?
-- Naming and intent — do names reflect responsibilities?
-
-LLM rules run only on violations already flagged by static rules (to limit API calls and cost).
 
 ### 4.5 Reporters
 Two output modes:
@@ -98,8 +89,6 @@ Language Adapters (parse → IR)
     ↓
 Static Rules (analyze IR → violations)
     ↓
-LLM Rules (analyze IR + source snippets → deeper violations, only for flagged items)
-    ↓
 Result Aggregator
     ↓
 Reporter (terminal or JSON/SARIF)
@@ -110,7 +99,6 @@ Reporter (terminal or JSON/SARIF)
 A `solid-checker.yml` config file supports:
 - Language-specific thresholds (e.g., max methods per class, max parameters)
 - Rule enable/disable flags
-- LLM provider and API key (optional, defaults to static-only if not set)
 - Exclude paths/patterns
 - Severity thresholds for CI exit codes
 
@@ -120,7 +108,6 @@ Defaults are sensible — the tool works out of the box with no config.
 
 - **No language adapter found** → skip file, warn user
 - **Parse error** → report file with error details, continue analysis of other files
-- **LLM unavailable** → fall back to static-only results, note in output
 - **No violations found** → print "No SOLID violations found." and exit 0
 
 ## 8. Testing Strategy
@@ -137,7 +124,6 @@ Defaults are sensible — the tool works out of the box with no config.
 - Static rules listed in §4.4
 - Terminal + JSON output
 - Config file support
-- LLM analysis as optional enhancement
 
 **Out of scope (future iterations):**
 - More language adapters (Java, Go, C#)
@@ -155,4 +141,3 @@ Defaults are sensible — the tool works out of the box with no config.
 5. CLI + terminal reporter
 6. JSON reporter
 7. Config file support
-8. LLM rules (optional)

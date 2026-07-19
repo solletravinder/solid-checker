@@ -7,7 +7,6 @@ Second task. Builds on IR models from Task 1. Provides the cross-module analysis
 
 ### IRBuilder (`solid_checker/ir/builder.py`)
 ```python
-from __future__ import annotations
 from typing import List, Dict, Optional, Set, Tuple
 from .models import Module, Class, Dependency
 
@@ -82,7 +81,6 @@ class IRBuilder:
 
 ### BaseAdapter (`solid_checker/adapters/base.py`)
 ```python
-from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Optional
 from solid_checker.ir.models import Module
