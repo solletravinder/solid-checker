@@ -15,10 +15,6 @@ requires-python = ">=3.9"
 dependencies = [
     "click>=8.0",
     "pyyaml>=6.0",
-    "anthropic>=0.39",
-    "tree-sitter>=0.20",
-    "tree-sitter-python>=0.20",
-    "tree-sitter-javascript>=0.20",
 ]
 
 [project.scripts]
@@ -173,7 +169,7 @@ def test_violation_creation():
 - Type hints on all public functions
 - TDD: write failing test first, then implementation
 - PEP 8 formatting
-- Dependencies: click, pyyaml, anthropic, tree-sitter
+- Dependencies: click, pyyaml
 
 ## Report Contract
 Write results to `.superpowers/sdd/reports/task-1-report.md` with:

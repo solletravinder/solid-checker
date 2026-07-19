@@ -330,7 +330,7 @@ export interface Worker {
 - Type hints on all public functions
 - TDD: write failing test first, then implementation
 - PEP 8 formatting
-- Regex-based parsing (no tree-sitter dependency for V1, per plan)
+- Regex-based parsing (no tree-sitter dependency)
 - Must handle `.js`, `.jsx`, `.ts`, `.tsx` extensions
 
 ## Interfaces

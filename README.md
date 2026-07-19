@@ -29,7 +29,7 @@ python -m solid_checker init-config
 
 ## Configuration
 
-Create `solid-checker.yml` to customize thresholds, enable/disable rules, or configure LLM analysis:
+Create `solid-checker.yml` to customize thresholds and enable/disable rules:
 
 ```yaml
 thresholds:
@@ -46,11 +46,6 @@ rules:
   interface_bloat: true
   dip_violations: true
   dependency_metrics: true
-
-llm:
-  enabled: false
-  provider: anthropic
-  api_key: null
 ```
 
 ## Architecture
@@ -58,7 +53,6 @@ llm:
 - **Core Engine** — orchestrates file discovery, parsing, rule execution
 - **Language Adapters** — parse source into normalized IR (Python, JS/TS)
 - **Static Rules** — fast deterministic checks on IR (SRP, OCP, LSP, ISP, DIP)
-- **LLM Rules** — optional deeper analysis via Anthropic API
 - **Reporters** — terminal (color-coded) or JSON output
 
 ## SOLID Principles Checked

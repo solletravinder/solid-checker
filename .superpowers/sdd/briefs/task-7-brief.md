@@ -9,7 +9,7 @@ Seventh task. Builds on everything from Tasks 1-6. The core engine orchestrates 
 ```python
 from __future__ import annotations
 from pathlib import Path
-from typing import Any, Optional
+from typing import Optional
 import yaml
 
 
@@ -28,11 +28,6 @@ DEFAULT_CONFIG = {
         "interface_bloat": True,
         "dip_violations": True,
         "dependency_metrics": True,
-    },
-    "llm": {
-        "enabled": False,
-        "provider": "anthropic",
-        "api_key": None,
     },
     "exclude": [
         "node_modules",
@@ -111,10 +106,20 @@ class SolidChecker:
         for rule in self.rules:
             if not self._is_rule_enabled(rule):
                 continue
+            target_kind = getattr(rule, 'target_kind', 'class')
             for module in modules:
                 context = RuleContext(builder=builder, module_path=module.file_path)
                 context.config = self.config
-                violations.extend(rule.check(module, context))
+                if target_kind == 'builder':
+                    violations.extend(rule.check(builder, context))
+                elif target_kind == 'interface':
+                    for iface in module.interfaces:
+                        violations.extend(rule.check(iface, context))
+                elif target_kind == 'module':
+                    violations.extend(rule.check(module, context))
+                else:  # 'class' — default
+                    for cls in module.classes:
+                        violations.extend(rule.check(cls, context))
 
         # Phase 3: Aggregate and deduplicate
         violations = self._deduplicate(violations)
@@ -151,7 +156,7 @@ class SolidChecker:
         return modules
 
     def _is_rule_enabled(self, rule: BaseRule) -> bool:
-        rule_name = getattr(rule, 'rule_name', None)
+        rule_name = getattr(rule, 'name', None)
         if rule_name:
             return self.config.get("rules", {}).get(rule_name, True)
         return True
@@ -219,7 +224,7 @@ def test_load_config_from_file(tmp_path):
 def test_default_config_has_all_keys():
     assert "rules" in DEFAULT_CONFIG
     assert "exclude" in DEFAULT_CONFIG
-    assert "llm" in DEFAULT_CONFIG
+    assert "thresholds" in DEFAULT_CONFIG
 ```
 
 ## Global Constraints
