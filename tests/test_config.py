@@ -15,4 +15,4 @@ def test_load_config_from_file(tmp_path):
 def test_default_config_has_all_keys():
     assert "rules" in DEFAULT_CONFIG
     assert "exclude" in DEFAULT_CONFIG
-    assert "llm" in DEFAULT_CONFIG
+    assert "thresholds" in DEFAULT_CONFIG

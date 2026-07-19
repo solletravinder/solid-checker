@@ -1,6 +1,6 @@
 from __future__ import annotations
 from pathlib import Path
-from typing import Any, Optional
+from typing import Optional
 import yaml
 
 
@@ -19,11 +19,6 @@ DEFAULT_CONFIG = {
         "interface_bloat": True,
         "dip_violations": True,
         "dependency_metrics": True,
-    },
-    "llm": {
-        "enabled": False,
-        "provider": "anthropic",
-        "api_key": None,
     },
     "exclude": [
         "node_modules",
