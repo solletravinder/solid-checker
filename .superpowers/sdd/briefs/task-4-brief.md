@@ -7,7 +7,6 @@ Fourth task. Builds on BaseAdapter (Task 2) and IR models (Task 1). The JS adapt
 
 ### JSAdapter (`solid_checker/adapters/js_adapter.py`)
 ```python
-from __future__ import annotations
 import re
 from pathlib import Path
 from typing import List, Optional

@@ -7,7 +7,6 @@ Fifth task. Builds on IR models (Task 1), IRBuilder (Task 2), and BaseRule patte
 
 ### Base Rule (`solid_checker/rules/base.py`)
 ```python
-from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import List, Optional
 from solid_checker.ir.models import Class, Violation, Module
@@ -60,7 +59,6 @@ from .hard_coded_types import HardCodedTypesRule
 
 ### GodClassRule (`solid_checker/rules/static/god_class.py`)
 ```python
-from __future__ import annotations
 from typing import List
 from solid_checker.ir.models import Class, Violation
 from solid_checker.rules.base import BaseRule, RuleContext
@@ -109,7 +107,6 @@ class GodClassRule(BaseRule):
 
 ### FeatureEnvyRule (`solid_checker/rules/static/feature_envy.py`)
 ```python
-from __future__ import annotations
 from typing import List, Set
 from solid_checker.ir.models import Class, Method, Violation, Dependency
 from solid_checker.rules.base import BaseRule, RuleContext
@@ -155,7 +152,7 @@ class FeatureEnvyRule(BaseRule):
                         ))
         return violations
 
-    def _detect_envy(self, cls: Class, method: Method, builder) -> str | None:
+    def _detect_envy(self, cls: Class, method: Method, builder) -> Optional[str]:
         """Heuristic: if method references another class name in its params or logic."""
         method_name_lower = method.name.lower()
         for param in method.parameters:
@@ -170,7 +167,6 @@ class FeatureEnvyRule(BaseRule):
 
 ### HardCodedTypesRule (`solid_checker/rules/static/hard_coded_types.py`)
 ```python
-from __future__ import annotations
 from typing import List
 from solid_checker.ir.models import Violation
 from solid_checker.rules.base import BaseRule, RuleContext
@@ -279,7 +275,7 @@ def test_hard_coded_types_detects_conditionals():
 ```
 
 ## Global Constraints
-- Python 3.9+, no Python 3.10+ syntax (use `str | None` not `Optional[str]` in type hints where possible, but `from __future__ import annotations` handles this)
+- Python 3.9+, no Python 3.10+ syntax (use `Optional[str]` instead of `str | None`)
 - Type hints on all public functions
 - TDD: write failing test first, then implementation
 - PEP 8 formatting

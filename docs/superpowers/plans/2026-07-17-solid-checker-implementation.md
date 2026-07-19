@@ -171,7 +171,6 @@ from .models import Violation, Severity
 
 `solid_checker/ir/models.py`:
 ```python
-from __future__ import annotations
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import List, Optional
@@ -331,7 +330,6 @@ Expected: FAIL with "No module named 'solid_checker.ir.builder'"
 
 `solid_checker/ir/builder.py`:
 ```python
-from __future__ import annotations
 from typing import List, Dict, Optional, Set, Tuple
 from .models import Module, Class, Dependency
 
@@ -411,7 +409,6 @@ from .base import BaseAdapter
 
 `solid_checker/adapters/base.py`:
 ```python
-from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Optional
 from solid_checker.ir.models import Module
@@ -587,7 +584,6 @@ Expected: FAIL with "No module named 'solid_checker.adapters.python_adapter'"
 
 `solid_checker/adapters/python_adapter.py`:
 ```python
-from __future__ import annotations
 import ast
 from pathlib import Path
 from typing import List, Optional
@@ -896,7 +892,6 @@ Expected: FAIL with "No module named 'solid_checker.adapters.js_adapter'"
 
 `solid_checker/adapters/js_adapter.py`:
 ```python
-from __future__ import annotations
 import re
 from pathlib import Path
 from typing import List, Optional
@@ -1242,7 +1237,6 @@ from .base import BaseRule, RuleContext
 
 `solid_checker/rules/base.py`:
 ```python
-from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import List, Optional
 from solid_checker.ir.models import Class, Violation, Module
@@ -1290,7 +1284,6 @@ from .hard_coded_types import HardCodedTypesRule
 
 `solid_checker/rules/static/god_class.py`:
 ```python
-from __future__ import annotations
 from typing import List
 from solid_checker.ir.models import Class, Violation
 from solid_checker.rules.base import BaseRule, RuleContext
@@ -1339,7 +1332,6 @@ class GodClassRule(BaseRule):
 
 `solid_checker/rules/static/feature_envy.py`:
 ```python
-from __future__ import annotations
 from typing import List, Set
 from solid_checker.ir.models import Class, Method, Violation, Dependency
 from solid_checker.rules.base import BaseRule, RuleContext
@@ -1387,7 +1379,7 @@ class FeatureEnvyRule(BaseRule):
                         ))
         return violations
 
-    def _detect_envy(self, cls: Class, method: Method, builder) -> str | None:
+    def _detect_envy(self, cls: Class, method: Method, builder) -> Optional[str]:
         """Heuristic: if method references another class name in its params or logic."""
         # Check method name for hints
         method_name_lower = method.name.lower()
@@ -1404,7 +1396,6 @@ class FeatureEnvyRule(BaseRule):
 
 `solid_checker/rules/static/hard_coded_types.py`:
 ```python
-from __future__ import annotations
 from typing import List
 from solid_checker.ir.models import Violation
 from solid_checker.rules.base import BaseRule, RuleContext
@@ -1566,7 +1557,6 @@ Expected: FAIL with "No module named 'solid_checker.rules.static.xxx'"
 
 `solid_checker/rules/static/lsp_violations.py`:
 ```python
-from __future__ import annotations
 from typing import List
 from solid_checker.ir.models import Class, Violation
 from solid_checker.rules.base import BaseRule, RuleContext
@@ -1624,7 +1614,6 @@ class LSPViolationsRule(BaseRule):
 
 `solid_checker/rules/static/interface_bloat.py`:
 ```python
-from __future__ import annotations
 from typing import List
 from solid_checker.ir.models import Interface, Violation
 from solid_checker.rules.base import BaseRule, RuleContext
@@ -1672,7 +1661,6 @@ class InterfaceBloatRule(BaseRule):
 
 `solid_checker/rules/static/dip_violations.py`:
 ```python
-from __future__ import annotations
 from typing import List
 from solid_checker.ir.models import Class, Dependency, Violation
 from solid_checker.rules.base import BaseRule, RuleContext
@@ -1762,7 +1750,6 @@ class DIPViolationsRule(BaseRule):
 
 `solid_checker/rules/static/dependency_metrics.py`:
 ```python
-from __future__ import annotations
 from typing import List
 from solid_checker.ir.builder import IRBuilder
 from solid_checker.ir.models import Violation
@@ -1895,7 +1882,6 @@ Expected: FAIL with "No module named 'solid_checker.engine'"
 
 `solid_checker/config.py`:
 ```python
-from __future__ import annotations
 from pathlib import Path
 from typing import Any, Optional
 import yaml
@@ -1982,7 +1968,6 @@ Expected: PASS
 
 `solid_checker/engine.py`:
 ```python
-from __future__ import annotations
 from pathlib import Path
 from typing import List, Optional, Dict, Type
 from .adapters.base import BaseAdapter
@@ -2168,7 +2153,6 @@ from .json import JSONReporter
 
 `solid_checker/reporters/terminal.py`:
 ```python
-from __future__ import annotations
 from typing import List
 from solid_checker.ir.models import Violation
 
@@ -2222,7 +2206,6 @@ class TerminalReporter:
 
 `solid_checker/reporters/json.py`:
 ```python
-from __future__ import annotations
 from typing import List, Dict, Any
 from solid_checker.ir.models import Violation
 import json
@@ -2251,7 +2234,6 @@ class JSONReporter:
 
 `solid_checker/cli.py`:
 ```python
-from __future__ import annotations
 import click
 from pathlib import Path
 from typing import Optional

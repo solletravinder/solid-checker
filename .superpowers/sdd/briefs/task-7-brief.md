@@ -7,7 +7,6 @@ Seventh task. Builds on everything from Tasks 1-6. The core engine orchestrates 
 
 ### Config (`solid_checker/config.py`)
 ```python
-from __future__ import annotations
 from pathlib import Path
 from typing import Optional
 import yaml
@@ -63,7 +62,6 @@ def _merge_configs(base: dict, override: dict) -> dict:
 
 ### Engine (`solid_checker/engine.py`)
 ```python
-from __future__ import annotations
 from pathlib import Path
 from typing import List, Optional, Dict
 from .adapters.base import BaseAdapter

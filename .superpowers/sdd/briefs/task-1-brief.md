@@ -33,7 +33,6 @@ __version__ = "0.1.0"
 
 ### IR Models (`solid_checker/ir/models.py`)
 ```python
-from __future__ import annotations
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import List, Optional

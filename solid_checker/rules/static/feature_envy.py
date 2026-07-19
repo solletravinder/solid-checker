@@ -1,5 +1,4 @@
-from __future__ import annotations
-from typing import List
+from typing import List, Optional
 from solid_checker.ir.models import Class, Method, Violation, Dependency
 from solid_checker.rules.base import BaseRule, RuleContext
 
@@ -46,7 +45,7 @@ class FeatureEnvyRule(BaseRule):
                         ))
         return violations
 
-    def _detect_envy(self, cls: Class, method: Method, builder) -> str | None:
+    def _detect_envy(self, cls: Class, method: Method, builder) -> Optional[str]:
         """Heuristic: if method references another class name in its params or logic."""
         method_name_lower = method.name.lower()
         for param in method.parameters:

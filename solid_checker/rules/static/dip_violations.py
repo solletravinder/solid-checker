@@ -1,4 +1,3 @@
-from __future__ import annotations
 from typing import List
 from solid_checker.ir.models import Class, Dependency, Violation
 from solid_checker.rules.base import BaseRule, RuleContext
